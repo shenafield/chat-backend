@@ -26,12 +26,11 @@ paths = [
 sio = socketio.Server(cors_allowed_origins="*")
 app = socketio.WSGIApp(
     sio,
-    static_files={
+    static_files={**{
         "/" + path: mimetyped(os.path.join("chat-frontend", path)) for path in paths
-    }
-    | {
+    }, **{
         "/": mimetyped("chat-frontend/index.html"),
-    },
+    }},
 )
 
 
