@@ -1,0 +1,4 @@
+[submodule "chat-frontend"]
+	path = chat-frontend
+	url = git@github.com:shenafield/chat-frontend.git
+	branch = build

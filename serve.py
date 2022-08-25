@@ -1,9 +1,38 @@
 import eventlet
 import socketio
 import string
+import os
+from pathlib import Path
 
+
+def mimetyped(path):
+    types = {
+        "html": "text/html",
+        "txt": "text/plain",
+        "js": "application/javascript",
+        "css": "text/css",
+    }
+    return {
+        "content_type": types.get(path.split(".")[-1], "text/plain"),
+        "filename": path,
+    }
+
+
+paths = [
+    os.path.join(*path.parts[1:])
+    for path in Path("chat-frontend").rglob("*")
+    if ".git" not in path.parts
+]
 sio = socketio.Server(cors_allowed_origins="*")
-app = socketio.WSGIApp(sio)
+app = socketio.WSGIApp(
+    sio,
+    static_files={
+        "/" + path: mimetyped(os.path.join("chat-frontend", path)) for path in paths
+    }
+    | {
+        "/": mimetyped("chat-frontend/index.html"),
+    },
+)
 
 
 @sio.event
